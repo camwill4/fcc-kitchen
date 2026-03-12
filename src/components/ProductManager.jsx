@@ -1,5 +1,5 @@
-import { useState } from 'react'
-import { Pencil, Trash2, Plus, ChevronDown, ChevronUp, Search, RotateCcw, Check, X, Mail, Settings2 } from 'lucide-react'
+import { useState, useRef } from 'react'
+import { Pencil, Trash2, Plus, ChevronDown, ChevronUp, Search, RotateCcw, Check, X, Mail, Settings2, Download, Upload } from 'lucide-react'
 import useStore from '../store/useStore'
 
 const BLANK = {
@@ -516,9 +516,44 @@ export default function ProductManager() {
     addCategory, renameCategory, deleteCategory,
     vendorEmails, setVendorEmail,
     emailjsConfig, setEmailjsConfig,
+    importData,
   } = useStore()
 
+  const importRef = useRef(null)
   const [emailjsOpen, setEmailjsOpen] = useState(false)
+
+  const handleExport = () => {
+    const data = { version: 1, products, vendors, categories, vendorEmails, emailjsConfig }
+    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' })
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = url
+    a.download = `fcc-inventory-${new Date().toISOString().slice(0, 10)}.json`
+    a.click()
+    URL.revokeObjectURL(url)
+  }
+
+  const handleImport = (e) => {
+    const file = e.target.files[0]
+    if (!file) return
+    const reader = new FileReader()
+    reader.onload = (ev) => {
+      try {
+        const data = JSON.parse(ev.target.result)
+        if (!data.products || !data.vendors || !data.categories) {
+          alert('Invalid backup file.')
+          return
+        }
+        if (confirm('This will replace all current data with the imported file. Continue?')) {
+          importData(data)
+        }
+      } catch {
+        alert('Could not read file. Make sure it\'s a valid FCC backup.')
+      }
+    }
+    reader.readAsText(file)
+    e.target.value = ''
+  }
 
   const [search, setSearch] = useState('')
   const [adding, setAdding] = useState(false)
@@ -554,16 +589,31 @@ export default function ProductManager() {
           <h1 className="text-2xl font-extrabold tracking-tight">Manage Products</h1>
           <p className="text-text-muted text-sm mt-1">{products.length} products across {categories.length} categories</p>
         </div>
-        <button
-          onClick={() => {
-            if (confirm('Reset all products to the original defaults? This cannot be undone.')) {
-              resetProducts()
-            }
-          }}
-          className="flex items-center gap-1.5 text-xs text-text-muted hover:text-orange transition-colors"
-        >
-          <RotateCcw size={12} /> Reset to defaults
-        </button>
+        <div className="flex items-center gap-3">
+          <button
+            onClick={handleExport}
+            className="flex items-center gap-1.5 text-xs text-text-muted hover:text-amber transition-colors"
+          >
+            <Download size={12} /> Export
+          </button>
+          <button
+            onClick={() => importRef.current?.click()}
+            className="flex items-center gap-1.5 text-xs text-text-muted hover:text-amber transition-colors"
+          >
+            <Upload size={12} /> Import
+          </button>
+          <input ref={importRef} type="file" accept=".json" className="hidden" onChange={handleImport} />
+          <button
+            onClick={() => {
+              if (confirm('Reset all products to the original defaults? This cannot be undone.')) {
+                resetProducts()
+              }
+            }}
+            className="flex items-center gap-1.5 text-xs text-text-muted hover:text-orange transition-colors"
+          >
+            <RotateCcw size={12} /> Reset
+          </button>
+        </div>
       </div>
 
       {/* Vendors & Categories */}

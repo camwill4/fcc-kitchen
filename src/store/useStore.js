@@ -45,6 +45,14 @@ const useStore = create(
 
       resetProducts: () => set({ products: PRODUCTS_DEFAULT }),
 
+      importData: (data) => set({
+        products: data.products,
+        vendors: data.vendors,
+        categories: data.categories,
+        vendorEmails: data.vendorEmails ?? {},
+        emailjsConfig: data.emailjsConfig ?? { publicKey: '', serviceId: '', templateId: '' },
+      }),
+
       setVendorEmail: (vendor, email) =>
         set((state) => ({
           vendorEmails: { ...state.vendorEmails, [vendor]: email },
