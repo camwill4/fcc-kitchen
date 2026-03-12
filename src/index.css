@@ -1,0 +1,91 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  * {
+    box-sizing: border-box;
+  }
+
+  html, body, #root {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+  }
+
+  body {
+    background-color: #0A1220;
+    color: #E8E8E8;
+    font-family: 'Inter', system-ui, sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  input[type='number']::-webkit-inner-spin-button,
+  input[type='number']::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+
+  input[type='number'] {
+    -moz-appearance: textfield;
+  }
+}
+
+@layer components {
+  .tier-card {
+    @apply relative flex flex-col gap-1 rounded-2xl border p-5 cursor-pointer transition-all duration-200;
+    @apply bg-surface border-border;
+  }
+
+  .tier-card:hover {
+    @apply border-orange bg-surface-2;
+    box-shadow: 0 0 20px rgba(212, 88, 10, 0.15);
+  }
+
+  .tier-card.active {
+    @apply border-orange bg-surface-2;
+    box-shadow: 0 0 24px rgba(212, 88, 10, 0.3);
+  }
+
+  .tier-card.active::before {
+    content: '';
+    @apply absolute top-3 right-3 w-2 h-2 rounded-full bg-orange;
+  }
+
+  .nav-btn {
+    @apply flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium transition-all duration-150;
+    @apply text-text-muted hover:text-text-primary hover:bg-surface-2;
+  }
+
+  .nav-btn.active {
+    @apply text-orange bg-surface-2;
+  }
+
+  .count-input {
+    @apply w-24 rounded-xl border border-border bg-surface px-3 py-2 text-right text-text-primary;
+    @apply text-sm font-medium focus:outline-none focus:border-orange transition-colors duration-150;
+  }
+
+  .count-input:focus {
+    box-shadow: 0 0 0 2px rgba(212, 88, 10, 0.2);
+  }
+
+  .primary-btn {
+    @apply px-6 py-3 rounded-xl bg-orange text-white font-semibold text-sm transition-all duration-150;
+    @apply hover:bg-orange-glow active:scale-95;
+    box-shadow: 0 0 16px rgba(212, 88, 10, 0.3);
+  }
+
+  .secondary-btn {
+    @apply px-6 py-3 rounded-xl border border-border text-text-muted font-medium text-sm transition-all duration-150;
+    @apply hover:border-orange hover:text-text-primary;
+  }
+
+  .category-header {
+    @apply text-xs font-semibold uppercase tracking-widest text-amber mb-3 mt-1;
+  }
+
+  .vendor-header {
+    @apply text-sm font-bold uppercase tracking-wider text-orange mb-1;
+  }
+}
